@@ -1,0 +1,177 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+@{
+    ViewData["Title"] = "Passenger Services Charts";
+}
+    <div class="container mx-4">
+        <h2 class="mb-4">Baggage Dashboard</h2>
+
+        <!-- STATUS CARDS -->
+        <div class="row mb-4">
+            <div class="col-md-4">
+                <div class="dashboard-card bg-warning">
+                    <h5>Pending</h5>
+                    <h2>5</h2>
+                    <p>Service requests waiting</p>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="dashboard-card bg-primary">
+                    <h5>Ongoing</h5>
+                    <h2>3</h2>
+                    <p>Currently processing</p>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="dashboard-card bg-success">
+                    <h5>Completed</h5>
+                    <h2>12</h2>
+                    <p>Finished services</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-6 mb-4">
+                <div class="chart-box">
+                    <h5 class="text-center">Meal Type Distribution</h5>
+                    <canvas id="mealChart"></canvas>
+                </div>
+            </div>
+
+            <div class="col-md-6 mb-5">
+                <div class="chart-box">
+                    <h5 class="text-center">Insurance Coverage Types</h5>
+                    <canvas id="insuranceChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mb-3">
+            <div class="col-md-12 mb-4">
+                <div class="chart-box">
+                    <h5 class="text-center">Baggage Weight per Passenger</h5>
+                    <canvas id="baggageChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+
+    <h2>Others</h2>
+
+    <div class="table-responsive">
+        <table class="table table-striped table-bordered">
+            <thead class="table-dark">
+                <tr>
+                    <th>Customer ID</th>
+                    <th>Origin</th>
+                    <th>Destination</th>
+                    <th>Pax</th>
+                    <th>Type</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>F001</td>
+                    <td>Manila</td>
+                    <td>Cebu</td>
+                    <td>2</td>
+                    <td>Insurance</td>
+                    <td>
+                        <a class="btn btn-primary"
+                           asp-controller="Home"
+                           asp-action="EditOthers"
+                           asp-route-id="F001"
+                           asp-route-pax="2"
+                           asp-route-service="Insurance">
+                            <i class="bi bi-pencil"></i>
+                        </a>
+                    </td>
+                </tr>
+                <tr>
+                    <td>F002</td>
+                    <td>Davao</td>
+                    <td>Manila</td>
+                    <td>1</td>
+                    <td>Insurance<br />Meals</td>
+                    <td>
+                        <a class="btn btn-primary mb-2"
+                           asp-controller="Home"
+                           asp-action="EditOthers"
+                           asp-route-id="F002"
+                           asp-route-pax="1"
+                           asp-route-service="Insurance">
+                            <i class="bi bi-pencil"></i>
+                        </a>
+                        <br />
+                        <a class="btn btn-primary"
+                           asp-controller="Home"
+                           asp-action="EditOthers"
+                           asp-route-id="F002"
+                           asp-route-pax="1"
+                           asp-route-service="Meals">
+                            <i class="bi bi-pencil"></i>
+                        </a>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+
+        new Chart(document.getElementById('baggageChart'), {
+            type: 'bar',
+            data: {
+                labels: ['P1001', 'P1002', 'P1003'],
+                datasets: [{
+                    label: 'Weight (kg)',
+                    data: [20, 7, 25]
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+
+        new Chart(document.getElementById('mealChart'), {
+            type: 'pie',
+            data: {
+                labels: ['Standard', 'Kiddie'],
+                datasets: [{
+                    data: [2, 1]
+                }]
+            },
+            options: {
+                responsive: true
+            }
+        });
+
+        new Chart(document.getElementById('insuranceChart'), {
+            type: 'doughnut',
+            data: {
+                labels: [
+                    'Medical',
+                    'Baggage',
+                    'Cancellation / Delay'
+                ],
+                datasets: [{
+                    data: [1, 1, 1]
+                }]
+            },
+            options: {
+                responsive: true
+            }
+        });
+    </script>

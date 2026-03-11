@@ -1,0 +1,58 @@
+﻿@{
+    ViewData["Title"] = "Edit Others";
+    int paxCount = ViewData["Pax"] != null ? (int)ViewData["Pax"] : 1;
+    string service = ViewData["Service"]?.ToString() ?? "Unknown";
+}
+
+<h2>Edit @service Details</h2>
+
+<form asp-action="EditOthers" method="post">
+    @for (int i = 1; i <= paxCount; i++)
+    {
+        <div class="mb-3 col-md-4">
+            <label class="form-label">Customer ID (Pax @i)</label>
+            <input type="text" class="form-control" name="CustomerId_@i" value="@ViewData["CustomerId"]" readonly />
+        </div>
+
+        @if (service == "Insurance")
+        {
+            <div class="mb-3 col-md-4">
+                <label class="form-label">Company (Pax @i)</label>
+                <input type="text" class="form-control" name="Company_@i" placeholder="Enter company name" />
+            </div>
+
+            <div class="mb-3 col-md-4">
+                <label class="form-label">Type of Insurance (Pax @i)</label>
+                <select class="form-select" name="InsuranceType_@i">
+                    <option value="Medical">Medical</option>
+                    <option value="Baggage">Baggage</option>
+                    <option value="Cancellation/Interruption">Cancellation/Interruption</option>
+                    <option value="Delay">Delay</option>
+                </select>
+            </div>
+        }
+        else if (service == "Meals")
+        {
+            <div class="mb-3 col-md-4">
+                <label class="form-label">Type of Meal (Pax @i)</label>
+                <select class="form-select" name="MealType_@i">
+                    <option value="Standard">Standard</option>
+                    <option value="Kiddie">Kiddie</option>
+                </select>
+            </div>
+
+            <div class="mb-3 col-md-4">
+                <label class="form-label">Meal Preference (Pax @i)</label>
+                <input type="text" class="form-control" name="MealPreference_@i" placeholder="Vegetarian, Halal, etc." />
+            </div>
+
+            <div class="mb-3 col-md-4">
+                <label class="form-label">Allergens (Pax @i)</label>
+                <input type="text" class="form-control" name="Allergens_@i" placeholder="Dairy, Seafoods, etc." />
+            </div>
+        }
+
+        <hr />
+    }
+    <button type="submit" class="btn btn-success">Save Changes</button>
+</form>
