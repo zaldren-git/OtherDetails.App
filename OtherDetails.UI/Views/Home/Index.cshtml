@@ -1,177 +1,283 @@
 ﻿@{
-    ViewData["Title"] = "Home Page";
-}
-@{
     ViewData["Title"] = "Passenger Services Charts";
 }
-    <div class="container mx-4">
-        <h2 class="mb-4">Baggage Dashboard</h2>
 
-        <!-- STATUS CARDS -->
-        <div class="row mb-4">
-            <div class="col-md-4">
-                <div class="dashboard-card bg-warning">
-                    <h5>Pending</h5>
-                    <h2>5</h2>
-                    <p>Service requests waiting</p>
-                </div>
-            </div>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-            <div class="col-md-4">
-                <div class="dashboard-card bg-primary">
-                    <h5>Ongoing</h5>
-                    <h2>3</h2>
-                    <p>Currently processing</p>
-                </div>
-            </div>
+<style>
+    body {
+        background-color: #f4f6f9;
+    }
 
-            <div class="col-md-4">
-                <div class="dashboard-card bg-success">
-                    <h5>Completed</h5>
-                    <h2>12</h2>
-                    <p>Finished services</p>
-                </div>
+    .chart-box {
+        background: #ffffff;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+
+    .dashboard-card {
+        border-radius: 12px;
+        color: white;
+        padding: 20px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+
+    canvas {
+        max-height: 250px;
+    }
+</style>
+
+
+<div class="container">
+
+    <h2 class="mb-4">Baggage Dashboard</h2>
+
+    <!-- STATUS CARDS -->
+    <div class="row mb-4">
+
+        <div class="col-md-4">
+            <div class="dashboard-card bg-warning">
+                <h5>Total Records</h5>
+                <h2 id="totalCount">0</h2>
+                <p>Total passenger services</p>
             </div>
         </div>
 
-        <div class="row">
-            <div class="col-md-6 mb-4">
-                <div class="chart-box">
-                    <h5 class="text-center">Meal Type Distribution</h5>
-                    <canvas id="mealChart"></canvas>
-                </div>
-            </div>
-
-            <div class="col-md-6 mb-5">
-                <div class="chart-box">
-                    <h5 class="text-center">Insurance Coverage Types</h5>
-                    <canvas id="insuranceChart"></canvas>
-                </div>
+        <div class="col-md-4">
+            <div class="dashboard-card bg-primary">
+                <h5>Passengers With Meals</h5>
+                <h2 id="mealCount">0</h2>
+                <p>Meal service requests</p>
             </div>
         </div>
 
-        <div class="row mb-3">
-            <div class="col-md-12 mb-4">
-                <div class="chart-box">
-                    <h5 class="text-center">Baggage Weight per Passenger</h5>
-                    <canvas id="baggageChart"></canvas>
-                </div>
+        <div class="col-md-4">
+            <div class="dashboard-card bg-success">
+                <h5>Passengers With Insurance</h5>
+                <h2 id="insuranceCount">0</h2>
+                <p>Insurance coverage</p>
             </div>
         </div>
 
     </div>
 
 
-    <h2>Others</h2>
+    <!-- CHARTS -->
+    <div class="row">
+
+        <div class="col-md-6 mb-4">
+            <div class="chart-box">
+                <h5 class="text-center">Meal Type Distribution</h5>
+                <canvas id="mealChart"></canvas>
+            </div>
+        </div>
+
+        <div class="col-md-6 mb-5">
+            <div class="chart-box">
+                <h5 class="text-center">Insurance Coverage Types</h5>
+                <canvas id="insuranceChart"></canvas>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="row mb-3">
+
+        <div class="col-md-12 mb-4">
+            <div class="chart-box">
+                <h5 class="text-center">Baggage Weight per Passenger</h5>
+                <canvas id="baggageChart"></canvas>
+            </div>
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- TABLE -->
+
+<div class="container mx-4">
+
+    <h2 class="mt-4">Others Details</h2>
 
     <div class="table-responsive">
-        <table class="table table-striped table-bordered">
+
+        <table id="othersTable" class="table table-striped table-bordered">
+
             <thead class="table-dark">
                 <tr>
-                    <th>Customer ID</th>
-                    <th>Origin</th>
-                    <th>Destination</th>
-                    <th>Pax</th>
-                    <th>Type</th>
+                    <th>Booking ID</th>
+                    <th>Meal</th>
+                    <th>Insurance</th>
+                    <th>Seat</th>
+                    <th>Baggage (kg)</th>
                     <th>Action</th>
                 </tr>
             </thead>
+
             <tbody>
-                <tr>
-                    <td>F001</td>
-                    <td>Manila</td>
-                    <td>Cebu</td>
-                    <td>2</td>
-                    <td>Insurance</td>
-                    <td>
-                        <a class="btn btn-primary"
-                           asp-controller="Home"
-                           asp-action="EditOthers"
-                           asp-route-id="F001"
-                           asp-route-pax="2"
-                           asp-route-service="Insurance">
-                            <i class="bi bi-pencil"></i>
-                        </a>
-                    </td>
-                </tr>
-                <tr>
-                    <td>F002</td>
-                    <td>Davao</td>
-                    <td>Manila</td>
-                    <td>1</td>
-                    <td>Insurance<br />Meals</td>
-                    <td>
-                        <a class="btn btn-primary mb-2"
-                           asp-controller="Home"
-                           asp-action="EditOthers"
-                           asp-route-id="F002"
-                           asp-route-pax="1"
-                           asp-route-service="Insurance">
-                            <i class="bi bi-pencil"></i>
-                        </a>
-                        <br />
-                        <a class="btn btn-primary"
-                           asp-controller="Home"
-                           asp-action="EditOthers"
-                           asp-route-id="F002"
-                           asp-route-pax="1"
-                           asp-route-service="Meals">
-                            <i class="bi bi-pencil"></i>
-                        </a>
-                    </td>
-                </tr>
             </tbody>
+
         </table>
+
     </div>
 
-    <script>
+</div>
 
-        new Chart(document.getElementById('baggageChart'), {
-            type: 'bar',
-            data: {
-                labels: ['P1001', 'P1002', 'P1003'],
-                datasets: [{
-                    label: 'Weight (kg)',
-                    data: [20, 7, 25]
+
+<script>
+
+    const API_BASE = "http://localhost:5027";
+    const API_OTHERS = `${API_BASE}/api/OtherDetails`;
+
+
+    function escapeHtml(str){
+        if (!str && str !== 0) return '';
+        return String(str).replace(/[&<>"'`=\/]/g, s => ({
+            '&':'&amp;',
+            '<':'&lt;',
+            '>':'&gt;',
+            '"':'&quot;',
+            "'":'&#39;',
+            '/':'&#x2F;',
+            '`':'&#x60;',
+            '=':'&#x3D;'
+        })[s]);
+    }
+
+
+    async function loadDashboard(){
+
+        const res = await fetch(API_OTHERS);
+        const data = await res.json();
+
+
+        /* STATUS COUNTS */
+
+        document.getElementById("totalCount").innerText = data.length;
+
+        const mealCount = data.filter(x => x.mealType).length;
+        const insuranceCount = data.filter(x => x.insuranceType).length;
+
+        document.getElementById("mealCount").innerText = mealCount;
+        document.getElementById("insuranceCount").innerText = insuranceCount;
+
+
+
+        /* MEAL CHART */
+
+        const mealMap = {};
+
+        data.forEach(x=>{
+            if(!x.mealType) return;
+
+            mealMap[x.mealType] = (mealMap[x.mealType] || 0) + 1;
+        });
+
+        new Chart(document.getElementById("mealChart"),{
+
+            type:"pie",
+
+            data:{
+                labels:Object.keys(mealMap),
+                datasets:[{
+                    data:Object.values(mealMap)
+                }]
+            }
+
+        });
+
+
+
+        /* INSURANCE CHART */
+
+        const insuranceMap = {};
+
+        data.forEach(x=>{
+            if(!x.insuranceType) return;
+
+            insuranceMap[x.insuranceType] = (insuranceMap[x.insuranceType] || 0) + 1;
+        });
+
+        new Chart(document.getElementById("insuranceChart"),{
+
+            type:"doughnut",
+
+            data:{
+                labels:Object.keys(insuranceMap),
+                datasets:[{
+                    data:Object.values(insuranceMap)
+                }]
+            }
+
+        });
+
+
+
+        /* BAGGAGE CHART */
+
+        const labels = data.map((x,i)=>`Passenger ${i+1}`);
+        const weights = data.map(x=>x.weight || 0);
+
+        new Chart(document.getElementById("baggageChart"),{
+
+            type:"bar",
+
+            data:{
+                labels:labels,
+                datasets:[{
+                    label:"Weight (kg)",
+                    data:weights
                 }]
             },
-            options: {
-                responsive: true,
-                scales: {
-                    y: {
-                        beginAtZero: true
-                    }
+
+            options:{
+                scales:{
+                    y:{beginAtZero:true}
                 }
             }
+
         });
 
-        new Chart(document.getElementById('mealChart'), {
-            type: 'pie',
-            data: {
-                labels: ['Standard', 'Kiddie'],
-                datasets: [{
-                    data: [2, 1]
-                }]
-            },
-            options: {
-                responsive: true
-            }
+
+
+        /* TABLE */
+
+        const tbody = document.querySelector("#othersTable tbody");
+
+        let html = "";
+
+        data.forEach(o=>{
+
+            html += `
+            <tr>
+
+                <td>${escapeHtml(o.bookingID)}</td>
+                <td>${escapeHtml(o.mealType)}</td>
+                <td>${escapeHtml(o.insuranceType)}</td>
+                <td>${escapeHtml(o.seat)}</td>
+                <td>${escapeHtml(o.weight ?? '')}</td>
+
+                <td>
+                    <a class="btn btn-primary"
+                       href="/Home/EditOthers?id=${o.othersID}">
+                       <i class="bi bi-pencil"></i>
+                    </a>
+                </td>
+
+            </tr>
+            `;
         });
 
-        new Chart(document.getElementById('insuranceChart'), {
-            type: 'doughnut',
-            data: {
-                labels: [
-                    'Medical',
-                    'Baggage',
-                    'Cancellation / Delay'
-                ],
-                datasets: [{
-                    data: [1, 1, 1]
-                }]
-            },
-            options: {
-                responsive: true
-            }
-        });
-    </script>
+        tbody.innerHTML = html;
+
+    }
+
+
+    window.addEventListener("DOMContentLoaded", loadDashboard);
+
+</script>
