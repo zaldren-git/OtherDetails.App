@@ -1,0 +1,167 @@
+﻿@* Views/OtherDetails/List.cshtml  –  Records table *@
+@model List<OthersDetails.App.Models.OtherDetailsDashboardRow>
+@{
+    ViewData["Title"] = "Other Details – Records";
+}
+
+<div class="container-fluid py-4">
+
+    @* ── Header ── *@
+    <div class="d-flex align-items-center justify-content-between mb-4 flex-wrap gap-2">
+        <div>
+            <h2 class="fw-bold mb-1">Other Details Records</h2>
+            <p class="text-muted mb-0 small">All passenger add-on records</p>
+        </div>
+        <a asp-action="Index" class="btn btn-outline-secondary">
+            <i class="bi bi-bar-chart-line me-1"></i>Back to Dashboard
+        </a>
+    </div>
+
+    @* ── Alerts ── *@
+    @if (ViewBag.Success != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="bi bi-check-circle-fill me-2"></i>@ViewBag.Success
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+    @if (ViewBag.Error != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="bi bi-exclamation-triangle-fill me-2"></i>@ViewBag.Error
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    @* ── Search ── *@
+    <div class="card border-0 shadow-sm mb-3">
+        <div class="card-body py-2 px-3">
+            <div class="row align-items-center g-2">
+                <div class="col-md-4">
+                    <div class="input-group input-group-sm">
+                        <span class="input-group-text bg-white border-end-0">
+                            <i class="bi bi-search text-muted"></i>
+                        </span>
+                        <input type="text" id="searchInput" class="form-control border-start-0"
+                               placeholder="Search by booking, route, add-on type…" />
+                    </div>
+                </div>
+                <div class="col-auto ms-auto">
+                    <small class="text-muted" id="resultsText"></small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @* ── Table ── *@
+    <div class="card border-0 shadow-sm">
+        <div class="card-body p-0">
+            @if (!Model.Any())
+            {
+                <div class="text-center py-5 text-muted">
+                    <i class="bi bi-inbox fs-1 d-block mb-2"></i>
+                    <p class="mb-0">No records found.</p>
+                </div>
+            }
+            else
+            {
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0" id="odTable">
+                        <thead class="table-light">
+                            <tr>
+                                <th class="ps-4">Booking ID</th>
+                                <th>Origin</th>
+                                <th>Destination</th>
+                                <th>Add-on Types</th>
+                                <th class="text-center pe-4">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var row in Model)
+                            {
+                                <tr data-search="@($"{row.BookingID} {row.Origin} {row.Destination} {row.ActiveTypes}".ToLower())">
+
+                                    <td class="ps-4">
+                                        <span class="fw-semibold text-primary">#@row.BookingID</span>
+                                    </td>
+
+                                    <td>@row.Origin</td>
+
+                                    <td>@row.Destination</td>
+
+                                    <td>
+                                        @if (!string.IsNullOrEmpty(row.MealType))
+                                        {
+                                            <span class="badge rounded-pill bg-warning text-dark me-1">
+                                                <i class="bi bi-cup-hot-fill me-1"></i>@row.MealType
+                                            </span>
+                                        }
+                                        @if (!string.IsNullOrEmpty(row.SeatLabel))
+                                        {
+                                            <span class="badge rounded-pill bg-info text-dark me-1">
+                                                <i class="bi bi-person-workspace me-1"></i>@row.SeatLabel
+                                            </span>
+                                        }
+                                        @if (!string.IsNullOrEmpty(row.InsuranceType))
+                                        {
+                                            <span class="badge rounded-pill bg-success me-1">
+                                                <i class="bi bi-shield-check me-1"></i>@row.InsuranceType
+                                            </span>
+                                        }
+                                        @if (!string.IsNullOrEmpty(row.BaggageWeight))
+                                        {
+                                            <span class="badge rounded-pill bg-secondary me-1">
+                                                <i class="bi bi-luggage me-1"></i>@row.BaggageWeight
+                                            </span>
+                                        }
+                                        @if (row.ActiveTypes == "None")
+                                        {
+                                            <span class="badge rounded-pill bg-light text-muted border">No add-ons</span>
+                                        }
+                                    </td>
+
+                                    <td class="text-center pe-4">
+                                        <a asp-action="Edit" asp-route-id="@row.OthersID"
+                                           class="btn btn-sm btn-outline-primary"
+                                           title="Edit record #@row.OthersID">
+                                            <i class="bi bi-pencil-square"></i>
+                                        </a>
+                                    </td>
+
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+        </div>
+    </div>
+
+</div>
+
+@section Scripts {
+    <script>
+        const searchInput = document.getElementById('searchInput');
+        const resultsText = document.getElementById('resultsText');
+        const rows        = document.querySelectorAll('#odTable tbody tr');
+        const total       = rows.length;
+
+        function updateCount(visible) {
+            resultsText.textContent = visible === total
+                ? `${total} record(s)`
+                : `${visible} of ${total} record(s)`;
+        }
+        updateCount(total);
+
+        searchInput.addEventListener('input', () => {
+            const q = searchInput.value.toLowerCase().trim();
+            let visible = 0;
+            rows.forEach(tr => {
+                const show = !q || tr.dataset.search.includes(q);
+                tr.style.display = show ? '' : 'none';
+                if (show) visible++;
+            });
+            updateCount(visible);
+        });
+    </script>
+}

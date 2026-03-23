@@ -1,4 +1,4 @@
-namespace OtherDetails.UI.Models
+namespace OthersDetails.App.Models
 {
     public class ErrorViewModel
     {

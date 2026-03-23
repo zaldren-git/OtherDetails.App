@@ -1,0 +1,260 @@
+﻿@* Views/OtherDetails/Edit.cshtml *@
+@model OthersDetails.App.Models.OtherDetailsEditViewModel
+@{
+    ViewData["Title"] = $"Edit Add-ons – Record #{Model.Details.OthersID}";
+}
+
+<div class="container-fluid py-4">
+
+    @* ── Breadcrumb ── *@
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a asp-action="Index">Dashboard</a></li>
+            <li class="breadcrumb-item"><a asp-action="List">Records</a></li>
+            <li class="breadcrumb-item active">Edit #@Model.Details.OthersID</li>
+        </ol>
+    </nav>
+
+    <div class="row g-4">
+
+        @* ── LEFT: Passenger & Flight info ── *@
+        <div class="col-lg-4">
+
+            @* Passenger card *@
+            <div class="card border-0 shadow-sm mb-3">
+                <div class="card-header bg-primary text-white">
+                    <small class="text-uppercase fw-semibold opacity-75 d-block"
+                           style="font-size:.7rem; letter-spacing:.08em">Passenger</small>
+                    <h5 class="mb-0 fw-bold mt-1">
+                        @(string.IsNullOrEmpty(Model.PaxName) || Model.PaxName == "—"
+                            ? $"Pax #{Model.Details.PaxID}"
+                            : Model.PaxName)
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row g-2">
+                        <div class="col-12">
+                            <small class="text-muted d-block" style="font-size:.72rem">CONTACT</small>
+                            <span class="fw-medium small">
+                                @(string.IsNullOrEmpty(Model.Contact) ? "—" : Model.Contact)
+                            </span>
+                        </div>
+                        <div class="col-6">
+                            <small class="text-muted d-block" style="font-size:.72rem">PAX ID</small>
+                            <span class="fw-medium small">#@Model.Details.PaxID</span>
+                        </div>
+                        <div class="col-6">
+                            <small class="text-muted d-block" style="font-size:.72rem">BOOKING ID</small>
+                            <span class="fw-medium small">#@Model.Details.BookingID</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            @* Flight card *@
+            <div class="card border-0 shadow-sm mb-3">
+                <div class="card-header bg-dark text-white">
+                    <small class="text-uppercase fw-semibold opacity-75 d-block"
+                           style="font-size:.7rem; letter-spacing:.08em">Flight Info</small>
+                    <h6 class="mb-0 fw-bold mt-1">Booking #@Model.Details.BookingID</h6>
+                </div>
+                <div class="card-body">
+                    <div class="mb-2">
+                        <small class="text-muted" style="font-size:.72rem">ROUTE</small>
+                        <div class="fw-medium small">
+                            @if (Model.Origin == "—" && Model.Destination == "—")
+                            {
+                                <span class="text-muted fst-italic">Route unavailable</span>
+                            }
+                            else
+                            {
+                                @Model.Origin
+                                <i class="bi bi-arrow-right mx-1 text-primary"></i>
+                                @Model.Destination
+                            }
+                        </div>
+                    </div>
+                    <div class="row g-2">
+                        <div class="col-6">
+                            <small class="text-muted d-block" style="font-size:.72rem">DATE</small>
+                            <span class="fw-medium small">
+                                @(string.IsNullOrEmpty(Model.TravelDate) ? "—" : Model.TravelDate)
+                            </span>
+                        </div>
+                        <div class="col-6">
+                            <small class="text-muted d-block" style="font-size:.72rem">TIME</small>
+                            <span class="fw-medium small">
+                                @(string.IsNullOrEmpty(Model.TravelTime) ? "—" : Model.TravelTime)
+                            </span>
+                        </div>
+                        <div class="col-12">
+                            <small class="text-muted d-block" style="font-size:.72rem">AIRLINE</small>
+                            <span class="fw-medium small">
+                                @(string.IsNullOrEmpty(Model.Airline) ? "—" : Model.Airline)
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            @* Current add-ons card *@
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white border-bottom">
+                    <span class="fw-semibold small">
+                        <i class="bi bi-tag-fill me-1 text-primary"></i>Current Add-ons
+                    </span>
+                </div>
+                <div class="card-body">
+                    @{
+                        bool hasAny = !string.IsNullOrEmpty(Model.CurrentMeal)
+                                   || !string.IsNullOrEmpty(Model.CurrentSeat)
+                                   || !string.IsNullOrEmpty(Model.CurrentInsurance)
+                                   || !string.IsNullOrEmpty(Model.CurrentBaggage);
+                    }
+
+                    @if (!hasAny)
+                    {
+                        <p class="text-muted fst-italic small mb-0">No add-ons currently set.</p>
+                    }
+                    else
+                    {
+                        <table class="table table-sm mb-0">
+                            @if (!string.IsNullOrEmpty(Model.CurrentMeal))
+                            {
+                                <tr>
+                                    <td class="text-muted" style="width:40%"><i class="bi bi-cup-hot-fill text-warning me-1"></i>Meal</td>
+                                    <td class="fw-medium">@Model.CurrentMeal</td>
+                                </tr>
+                            }
+                            @if (!string.IsNullOrEmpty(Model.CurrentSeat))
+                            {
+                                <tr>
+                                    <td class="text-muted"><i class="bi bi-person-workspace text-info me-1"></i>Seat</td>
+                                    <td class="fw-medium">@Model.CurrentSeat</td>
+                                </tr>
+                            }
+                            @if (!string.IsNullOrEmpty(Model.CurrentInsurance))
+                            {
+                                <tr>
+                                    <td class="text-muted"><i class="bi bi-shield-check text-success me-1"></i>Insurance</td>
+                                    <td class="fw-medium">@Model.CurrentInsurance</td>
+                                </tr>
+                            }
+                            @if (!string.IsNullOrEmpty(Model.CurrentBaggage))
+                            {
+                                <tr>
+                                    <td class="text-muted"><i class="bi bi-luggage text-secondary me-1"></i>Baggage</td>
+                                    <td class="fw-medium">@Model.CurrentBaggage</td>
+                                </tr>
+                            }
+                        </table>
+                    }
+                </div>
+            </div>
+
+        </div>
+
+        @* ── RIGHT: Edit form ── *@
+        <div class="col-lg-8">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white border-bottom">
+                    <h5 class="mb-0 fw-bold">Update Add-ons</h5>
+                    <small class="text-muted">
+                        The dropdowns below are pre-filled with the passenger's current selections.
+                        Change any option and click <strong>Save Changes</strong>.
+                        Select <em>— None —</em> to remove an add-on.
+                    </small>
+                </div>
+                <div class="card-body">
+
+                    <form asp-action="Edit" asp-route-id="@Model.Details.OthersID" method="post">
+                        @Html.AntiForgeryToken()
+
+                        <input type="hidden" name="BookingID" value="@Model.Details.BookingID" />
+                        <input type="hidden" name="PaxID" value="@Model.Details.PaxID" />
+
+                        <div class="row g-4">
+
+                            @* Meal *@
+                            <div class="col-md-6">
+                                <label for="MealID" class="form-label fw-semibold">
+                                    <i class="bi bi-cup-hot-fill text-warning me-1"></i>Meal Preference
+                                </label>
+                                @if (!string.IsNullOrEmpty(Model.CurrentMeal))
+                                {
+                                    <div class="text-muted small mb-1">
+                                        Currently: <strong>@Model.CurrentMeal</strong>
+                                    </div>
+                                }
+                                <select id="MealID" name="MealID" class="form-select"
+                                        asp-items="@Model.MealSelectList">
+                                </select>
+                            </div>
+
+                            @* Seat *@
+                            <div class="col-md-6">
+                                <label for="SeatID" class="form-label fw-semibold">
+                                    <i class="bi bi-person-workspace text-info me-1"></i>Seat
+                                </label>
+                                @if (!string.IsNullOrEmpty(Model.CurrentSeat))
+                                {
+                                    <div class="text-muted small mb-1">
+                                        Currently: <strong>@Model.CurrentSeat</strong>
+                                    </div>
+                                }
+                                <select id="SeatID" name="SeatID" class="form-select"
+                                        asp-items="@Model.SeatSelectList">
+                                </select>
+                            </div>
+
+                            @* Insurance *@
+                            <div class="col-md-6">
+                                <label for="InsuranceID" class="form-label fw-semibold">
+                                    <i class="bi bi-shield-check text-success me-1"></i>Insurance
+                                </label>
+                                @if (!string.IsNullOrEmpty(Model.CurrentInsurance))
+                                {
+                                    <div class="text-muted small mb-1">
+                                        Currently: <strong>@Model.CurrentInsurance</strong>
+                                    </div>
+                                }
+                                <select id="InsuranceID" name="InsuranceID" class="form-select"
+                                        asp-items="@Model.InsuranceSelectList">
+                                </select>
+                            </div>
+
+                            @* Baggage *@
+                            <div class="col-md-6">
+                                <label for="BaggageID" class="form-label fw-semibold">
+                                    <i class="bi bi-luggage text-secondary me-1"></i>Baggage Allowance
+                                </label>
+                                @if (!string.IsNullOrEmpty(Model.CurrentBaggage))
+                                {
+                                    <div class="text-muted small mb-1">
+                                        Currently: <strong>@Model.CurrentBaggage</strong>
+                                    </div>
+                                }
+                                <select id="BaggageID" name="BaggageID" class="form-select"
+                                        asp-items="@Model.BaggageSelectList">
+                                </select>
+                            </div>
+
+                        </div>
+
+                        <div class="d-flex gap-2 mt-4 pt-3 border-top">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-floppy-fill me-1"></i>Save Changes
+                            </button>
+                            <a asp-action="List" class="btn btn-outline-secondary">
+                                <i class="bi bi-arrow-left me-1"></i>Back to Records
+                            </a>
+                        </div>
+
+                    </form>
+
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>

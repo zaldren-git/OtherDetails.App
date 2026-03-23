@@ -1,0 +1,289 @@
+﻿@* Views/OtherDetails/Index.cshtml  –  Dashboard with charts *@
+@model OthersDetails.App.Models.OtherDetailsDashboardViewModel
+@{
+    ViewData["Title"] = "Other Details – Dashboard";
+    var s = Model.Summary;
+}
+
+<div class="container-fluid py-4">
+
+    @* ── Header ── *@
+    <div class="d-flex align-items-center justify-content-between mb-4 flex-wrap gap-2">
+        <div>
+            <h2 class="fw-bold mb-1">Other Details Dashboard</h2>
+            <p class="text-muted mb-0 small">Overview of passenger add-ons across all bookings</p>
+        </div>
+        <a asp-action="List" class="btn btn-primary">
+            <i class="bi bi-table me-1"></i>View Records Table
+        </a>
+    </div>
+
+    @* ── Stat cards ── *@
+    <div class="row g-3 mb-4">
+        <div class="col-6 col-md-3">
+            <div class="card border-0 shadow-sm text-center py-3">
+                <div class="fs-2 fw-bold text-primary">@s.TotalRecords</div>
+                <div class="small text-muted">Total Records</div>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="card border-0 shadow-sm text-center py-3">
+                <div class="fs-2 fw-bold text-warning">@s.WithMeal</div>
+                <div class="small text-muted">With Meal</div>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="card border-0 shadow-sm text-center py-3">
+                <div class="fs-2 fw-bold text-info">@s.WithSeat</div>
+                <div class="small text-muted">With Seat</div>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="card border-0 shadow-sm text-center py-3">
+                <div class="fs-2 fw-bold text-success">@s.WithInsurance</div>
+                <div class="small text-muted">With Insurance</div>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="card border-0 shadow-sm text-center py-3">
+                <div class="fs-2 fw-bold text-secondary">@s.WithBaggage</div>
+                <div class="small text-muted">With Baggage</div>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="card border-0 shadow-sm text-center py-3">
+                <div class="fs-2 fw-bold text-danger">@s.NoAddOns</div>
+                <div class="small text-muted">No Add-ons</div>
+            </div>
+        </div>
+    </div>
+
+    @* ── Charts row ── *@
+    <div class="row g-3 mb-4">
+
+        @* Add-on adoption bar chart *@
+        <div class="col-lg-6">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-header bg-white border-bottom fw-semibold">
+                    <i class="bi bi-bar-chart-fill me-2 text-primary"></i>Add-on Adoption
+                </div>
+                <div class="card-body d-flex align-items-center justify-content-center">
+                    <canvas id="adoptionChart" height="220"></canvas>
+                </div>
+            </div>
+        </div>
+
+        @* Meal breakdown doughnut *@
+        <div class="col-lg-6">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-header bg-white border-bottom fw-semibold">
+                    <i class="bi bi-pie-chart-fill me-2 text-warning"></i>Meal Type Breakdown
+                </div>
+                <div class="card-body d-flex align-items-center justify-content-center">
+                    @if (s.MealBreakdown.Count == 0)
+                    {
+                        <p class="text-muted fst-italic small">No meal data yet.</p>
+                    }
+                    else
+                    {
+                        <canvas id="mealChart" height="220"></canvas>
+                    }
+                </div>
+            </div>
+        </div>
+
+        @* Insurance breakdown *@
+        <div class="col-lg-6">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-header bg-white border-bottom fw-semibold">
+                    <i class="bi bi-shield-fill me-2 text-success"></i>Insurance Type Breakdown
+                </div>
+                <div class="card-body d-flex align-items-center justify-content-center">
+                    @if (s.InsuranceBreakdown.Count == 0)
+                    {
+                        <p class="text-muted fst-italic small">No insurance data yet.</p>
+                    }
+                    else
+                    {
+                        <canvas id="insuranceChart" height="220"></canvas>
+                    }
+                </div>
+            </div>
+        </div>
+
+        @* Baggage breakdown *@
+        <div class="col-lg-6">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-header bg-white border-bottom fw-semibold">
+                    <i class="bi bi-luggage-fill me-2 text-secondary"></i>Baggage Allowance Breakdown
+                </div>
+                <div class="card-body d-flex align-items-center justify-content-center">
+                    @if (s.BaggageBreakdown.Count == 0)
+                    {
+                        <p class="text-muted fst-italic small">No baggage data yet.</p>
+                    }
+                    else
+                    {
+                        <canvas id="baggageChart" height="220"></canvas>
+                    }
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    @* ── Recent records preview (top 5) ── *@
+    <div class="card border-0 shadow-sm">
+        <div class="card-header bg-white border-bottom d-flex align-items-center justify-content-between">
+            <span class="fw-semibold"><i class="bi bi-clock-history me-2 text-primary"></i>Recent Records</span>
+            <a asp-action="List" class="btn btn-sm btn-outline-primary">View All</a>
+        </div>
+        <div class="card-body p-0">
+            @if (!Model.Rows.Any())
+            {
+                <div class="text-center py-4 text-muted"><i class="bi bi-inbox me-2"></i>No records yet.</div>
+            }
+            else
+            {
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th class="ps-4">Booking ID</th>
+                                <th>Origin</th>
+                                <th>Destination</th>
+                                <th>Add-ons</th>
+                                <th class="text-center pe-4">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var row in Model.Rows.Take(5))
+                            {
+                                <tr>
+                                    <td class="ps-4"><span class="fw-semibold text-primary">#@row.BookingID</span></td>
+                                    <td>@row.Origin</td>
+                                    <td>@row.Destination</td>
+                                    <td>
+                                        @if (!string.IsNullOrEmpty(row.MealType))
+                                        {
+                                            <span class="badge bg-warning text-dark me-1"><i class="bi bi-cup-hot-fill me-1"></i>@row.MealType</span>
+                                        }
+                                        @if (!string.IsNullOrEmpty(row.SeatLabel))
+                                        {
+                                            <span class="badge bg-info text-dark me-1"><i class="bi bi-person-workspace me-1"></i>@row.SeatLabel</span>
+                                        }
+                                        @if (!string.IsNullOrEmpty(row.InsuranceType))
+                                        {
+                                            <span class="badge bg-success me-1"><i class="bi bi-shield-check me-1"></i>@row.InsuranceType</span>
+                                        }
+                                        @if (!string.IsNullOrEmpty(row.BaggageWeight))
+                                        {
+                                            <span class="badge bg-secondary me-1"><i class="bi bi-luggage me-1"></i>@row.BaggageWeight</span>
+                                        }
+                                        @if (row.ActiveTypes == "None")
+                                        {
+                                            <span class="badge bg-light text-muted border">No add-ons</span>
+                                        }
+                                    </td>
+                                    <td class="text-center pe-4">
+                                        <a asp-action="Edit" asp-route-id="@row.OthersID"
+                                               class="btn btn-sm btn-outline-primary" title="Edit">
+                                            <i class="bi bi-pencil-square"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+        </div>
+    </div>
+
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <script>
+        // ── Adoption bar chart ──────────────────────────────────────────────
+        new Chart(document.getElementById('adoptionChart'), {
+        type: 'bar',
+        data: {
+        labels: ['Meal', 'Seat', 'Insurance', 'Baggage', 'No Add-ons'],
+        datasets: [{
+        label: 'Passengers',
+        data: [@s.WithMeal, @s.WithSeat, @s.WithInsurance, @s.WithBaggage, @s.NoAddOns],
+        backgroundColor: ['#ffc107','#0dcaf0','#198754','#6c757d','#dc3545'],
+        borderRadius: 6,
+        }]
+        },
+        options: {
+        responsive: true,
+        plugins: { legend: { display: false } },
+        scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } }
+        }
+        });
+
+        @if (s.MealBreakdown.Count > 0)
+        {
+            <text>
+                // ── Meal doughnut ────────────────────────────────────────────────────
+                new Chart(document.getElementById('mealChart'), {
+                type: 'doughnut',
+                data: {
+                labels: [@Html.Raw(string.Join(",", s.MealBreakdown.Keys.Select(k => $"'{k}'")))],
+                datasets: [{
+                data: [@string.Join(",", s.MealBreakdown.Values)],
+                backgroundColor: ['#ffc107','#fd7e14','#dc3545','#6f42c1','#20c997'],
+                borderWidth: 2,
+                }]
+                },
+                options: { responsive: true, plugins: { legend: { position: 'bottom' } } }
+                });
+            </text>
+        }
+
+        @if (s.InsuranceBreakdown.Count > 0)
+        {
+            <text>
+                // ── Insurance doughnut ───────────────────────────────────────────────
+                new Chart(document.getElementById('insuranceChart'), {
+                type: 'doughnut',
+                data: {
+                labels: [@Html.Raw(string.Join(",", s.InsuranceBreakdown.Keys.Select(k => $"'{k}'")))],
+                datasets: [{
+                data: [@string.Join(",", s.InsuranceBreakdown.Values)],
+                backgroundColor: ['#198754','#20c997','#0dcaf0','#0d6efd'],
+                borderWidth: 2,
+                }]
+                },
+                options: { responsive: true, plugins: { legend: { position: 'bottom' } } }
+                });
+            </text>
+        }
+
+        @if (s.BaggageBreakdown.Count > 0)
+        {
+            <text>
+                // ── Baggage bar chart ────────────────────────────────────────────────
+                new Chart(document.getElementById('baggageChart'), {
+                type: 'bar',
+                data: {
+                labels: [@Html.Raw(string.Join(",", s.BaggageBreakdown.Keys.Select(k => $"'{k}'")))],
+                datasets: [{
+                label: 'Passengers',
+                data: [@string.Join(",", s.BaggageBreakdown.Values)],
+                backgroundColor: '#6c757d',
+                borderRadius: 6,
+                }]
+                },
+                options: {
+                responsive: true,
+                plugins: { legend: { display: false } },
+                scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } }
+                }
+                });
+            </text>
+        }
+    </script>
+}
